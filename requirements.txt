@@ -1,0 +1,24 @@
+# python: interactive/kernel (for notebooks)
+ipython
+ipykernel
+ipywidgets
+nbconvert
+nbformat
+# data science
+numpy==2.3
+scipy==1.16
+pandas==2.3
+shortuuid==1.0
+# visualization
+plotly==6.3
+kaleido==1.0
+matplotlib==3.10
+tabulate
+# machine lerarning
+torch==2.7
+lightning==2.5
+torchinfo==1.8
+tensorboard==2.20
+tensorflow==2.20
+# network
+slurm-requests>=0.0.2
