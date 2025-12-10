@@ -2,9 +2,9 @@ import os
 import json
 
 
-def append_json(file: str, data: dict):
+def update_json(file: str, data: dict):
     """
-    Appends data to a JSON file.
+    Updates data in a JSON file.
 
     If the file does not exist, it is created.
     New data is merged with existing data, with new keys overwriting old ones.
@@ -23,10 +23,10 @@ def append_json(file: str, data: dict):
         json.dump(existing_data, f, indent=4)
 
 
-def append_meta(path: str, data: dict):
-    """Append metadata to a meta.json file in the given path."""
+def update_meta(path: str, data: dict):
+    """Update metadata in a meta.json file in the given path."""
     meta_file = os.path.join(path, "meta.json")
-    append_json(meta_file, data)
+    update_json(meta_file, data)
 
 
 def load_meta(path: str) -> dict:
