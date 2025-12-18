@@ -87,18 +87,36 @@ class MultiLayerLeakyReLUModel(Model):
         leaky_relu_factor: float,
         learning_rate: float,
         weight_decay: float,
+        optimizer: OptimizerTypes = OptimizerTypes.SGD,
+        betas: tuple[float, float] = (0.9, 0.999),
     ):
 
         loss_fn = nn.MSELoss()
-        optimizer = lambda params: torch.optim.SGD(
-            params,
-            lr=learning_rate,
-            weight_decay=weight_decay,
-        )
+        match optimizer:
+            case OptimizerTypes.SGD:
+                opt = lambda params: torch.optim.SGD(
+                    params,
+                    lr=learning_rate,
+                    weight_decay=weight_decay,
+                )
+            case OptimizerTypes.ADAM:
+                opt = lambda params: torch.optim.Adam(
+                    params,
+                    lr=learning_rate,
+                    weight_decay=weight_decay,
+                    betas=betas,
+                )
+            case OptimizerTypes.ADAMW:
+                opt = lambda params: torch.optim.AdamW(
+                    params,
+                    lr=learning_rate,
+                    weight_decay=weight_decay,
+                    betas=betas,
+                )
 
         super().__init__(
             loss_fn=loss_fn,
-            optimizer=optimizer,
+            optimizer=opt,
         )
         self.save_hyperparameters(
             dict(
@@ -106,6 +124,7 @@ class MultiLayerLeakyReLUModel(Model):
                 output_shape=output_shape,
                 hidden_layer_sizes=hidden_layer_sizes,
                 leaky_relu_factor=leaky_relu_factor,
+                optimizer=optimizer,
                 learning_rate=learning_rate,
                 weight_decay=weight_decay,
             )
@@ -140,8 +159,15 @@ class MultiLayerLeakyReLUModel(Model):
         parser.add_argument("--hidden_layer_sizes", type=int, nargs="*", default=[])
         parser.add_argument("--leaky_relu_factor", type=float, default=0.1)
         # optimizer
+        parser.add_argument(
+            "--optimizer",
+            type=OptimizerTypes,
+            choices=list(OptimizerTypes),
+            default=OptimizerTypes.SGD,
+        )
         parser.add_argument("--learning_rate", type=float, default=0.01)
         parser.add_argument("--weight_decay", type=float, default=0.0)
+        parser.add_argument("--betas", type=float, nargs=2, default=(0.9, 0.999))
         return parser
 
     def forward(self, x):

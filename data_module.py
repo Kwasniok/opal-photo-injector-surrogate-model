@@ -26,13 +26,13 @@ class NPZTensorDataModule(pl.LightningDataModule):
         self,
         path,
         *,
-        batch_size:int,
-        train_val_split:float=0.8,
+        batch_size: int,
+        train_val_split: float = 0.8,
         input_transform=None,
         target_transform=None,
-        num_workers:int|None=None,
-        persistent_workers:bool=False,
-        pin_memory:bool=False,
+        num_workers: int | None = None,
+        persistent_workers: bool = False,
+        pin_memory: bool = False,
     ):
         """
         Initialize the data module.
@@ -78,13 +78,13 @@ class NPZTensorDataModule(pl.LightningDataModule):
         if self._output_shape is None:
             self._cache_shapes()
         return self._output_shape or ()
-    
+
     def _cache_shapes(self):
         shapes = _get_npy_shapes(os.path.join(self._path, "test.npz"))
         self._input_shape = shapes["x"][1:]
         self._output_shape = shapes["y"][1:]
 
-    def setup(self, stage:str="fit"):
+    def setup(self, stage: str = "fit"):
 
         match stage:
             case "fit":
@@ -96,28 +96,30 @@ class NPZTensorDataModule(pl.LightningDataModule):
             case _:
                 # unclear stage, setup training & validation by default
                 self._setup_train_val()
-            
+
     def _setup_train_val(self):
         if self._train_dataset is not None and self._val_dataset is not None:
             # already setup
             return
-        
+
         # load train + val
         train_dataset = self._load_xy("train")
         # split
-        generator= torch.Generator().manual_seed(2025)
+        generator = torch.Generator().manual_seed(2025)
         train_size = int(self._train_val_split * len(train_dataset))
         val_size = len(train_dataset) - train_size
         self._train_dataset, self._val_dataset = map(
             _consolidate,
-            torch.utils.data.random_split(train_dataset, [train_size, val_size], generator=generator),
+            torch.utils.data.random_split(
+                train_dataset, [train_size, val_size], generator=generator
+            ),
         )
 
     def _setup_test(self):
         if self._test_dataset is not None:
             # already setup
             return
-        
+
         self.test_dataset = self._load_xy("test")
 
     def _setup_predict(self):
@@ -130,7 +132,9 @@ class NPZTensorDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         if self._train_dataset is None:
-            raise RuntimeError("The data module has not been setup for training yet. Call `setup('fit')` first.")
+            raise RuntimeError(
+                "The data module has not been setup for training yet. Call `setup('fit')` first."
+            )
 
         return DataLoader(
             self._train_dataset,
@@ -143,8 +147,10 @@ class NPZTensorDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         if self._val_dataset is None:
-            raise RuntimeError("The data module has not been setup for validation yet. Call `setup('fit')` first.")
-        
+            raise RuntimeError(
+                "The data module has not been setup for validation yet. Call `setup('fit')` first."
+            )
+
         return DataLoader(
             self._val_dataset,
             batch_size=self._batch_size,
@@ -156,7 +162,9 @@ class NPZTensorDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         if self.test_dataset is None:
-            raise RuntimeError("The data module has not been setup for testing yet. Call `setup('test')` first.")
+            raise RuntimeError(
+                "The data module has not been setup for testing yet. Call `setup('test')` first."
+            )
 
         return DataLoader(
             self.test_dataset,
@@ -169,7 +177,9 @@ class NPZTensorDataModule(pl.LightningDataModule):
 
     def predict_dataloader(self):
         if self.predict_dataset is None:
-            raise RuntimeError("The data module has not been setup for prediction yet. Call `setup('predict')` first.")
+            raise RuntimeError(
+                "The data module has not been setup for prediction yet. Call `setup('predict')` first."
+            )
 
         return DataLoader(
             self.predict_dataset,
@@ -179,7 +189,6 @@ class NPZTensorDataModule(pl.LightningDataModule):
             pin_memory=self._pin_memory,
             shuffle=False,
         )
-
 
     def _load_xy(self, tag) -> TensorDataset:
         data = np.load(os.path.join(self._path, f"{tag}.npz"))
@@ -193,7 +202,7 @@ class NPZTensorDataModule(pl.LightningDataModule):
             y = self._target_transform(y)
 
         return TensorDataset(x, y)
-    
+
     def _load_x(self, tag) -> TensorDataset:
         data = np.load(os.path.join(self._path, f"{tag}.npz"))
 
@@ -212,6 +221,7 @@ def _consolidate(subset: Subset) -> TensorDataset:
     """
     xs, ys = zip(*[subset[i] for i in range(len(subset))])
     return TensorDataset(torch.stack(xs), torch.stack(ys))
+
 
 def _get_npy_shapes(path):
     """
