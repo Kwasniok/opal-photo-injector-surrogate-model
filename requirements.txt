@@ -10,6 +10,7 @@ scipy==1.16
 pandas==2.3
 fastparquet
 shortuuid==1.0
+scikit-learn==1.8
 # visualization
 plotly==6.3
 kaleido==1.0
