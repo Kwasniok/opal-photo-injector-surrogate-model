@@ -22,5 +22,6 @@ lightning==2.5
 torchinfo==1.8
 tensorboard==2.20
 tensorflow==2.20
+pythae
 # network
 slurm-requests>=0.0.2
