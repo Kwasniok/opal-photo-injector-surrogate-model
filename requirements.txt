@@ -13,6 +13,7 @@ shortuuid==1.0
 scikit-learn==1.8
 # visualization
 plotly==6.3
+dash==4.0
 kaleido==1.0
 matplotlib==3.10
 tabulate
