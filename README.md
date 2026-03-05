@@ -1,9 +1,9 @@
-# torch-lightning-template
+# opal-photo-injector-surrogate-model
 
-A basic template for machine learning with pytorch lightning.
+Framework to train and evaluate basic neural network surrogate models for low dimensional input/output vectors.
 
-# Requirements
-- This template is designed for python v3.13+ on linux. Other operating systems will require a manual installation.
+# Requirements/Tested on:
+- python v3.13+ on linux
 
 
 # Start Jupyter Lab
@@ -18,9 +18,8 @@ Note: This will automatically [install](#installation) all python packages as we
 # Usage
 This project uses torch lightning.
 
-1. define your data with `data_module.py`
-2. define your model in `model.py`
-3. adapt and execute the `ipynb` in numerical order
+1. store required files in `data` 
+2. inspect and use the `.ipynb` in numerical order
 
 🗒️ **NOTE**: The experiment dispatch allows to automatically dispatch the fitting and evaluation of individual models e.g. for a grid scan of hyperparamaters a.k.a. as finetuning.
 
